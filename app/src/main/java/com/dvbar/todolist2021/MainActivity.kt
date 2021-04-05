@@ -3,18 +3,16 @@ package com.dvbar.todolist2021
 import android.content.ContentValues
 import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.dvbar.todolist2021.WeatherMapper.parseWeatherData
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
 
-    private val recyclerAdapter = WeatherAdapter()
+    private val recyclerAdapter = StringAdapter()
     private lateinit var dbHelper: DbHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,9 +28,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
         recyclerView.adapter = recyclerAdapter
         recyclerView.layoutManager =
-            LinearLayoutManager(this,  LinearLayoutManager.VERTICAL, false)
+            LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
 
         editText.setText(readText())
+
+        for (data in readNotes()) {
+            recyclerAdapter.add(data)
+        }
 
         btn.setOnClickListener(this)
         btn.setOnClickListener {
@@ -89,7 +91,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         if (requestCode == 1 && resultCode == RESULT_OK) {
             val stringExtra = data?.getStringExtra("newKey").orEmpty()
             saveNote(stringExtra)
-            recyclerAdapter.add(stringExtra.parseWeatherData())
+            recyclerAdapter.add(stringExtra)
         }
     }
 
