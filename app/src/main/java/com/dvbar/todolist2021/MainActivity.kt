@@ -9,6 +9,7 @@ import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.dvbar.todolist2021.WeatherMapper.parseWeatherData
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
 
@@ -32,9 +33,16 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
         editText.setText(readText())
 
-        for (data in readNotes()) {
-            recyclerAdapter.add(WeatherMapper.toWeatherData(data))
-        }
+//        for (data in readNotes()) {
+//            recyclerAdapter.add(WeatherMapper.toWeatherData(data))
+//        }
+
+        readNotes()
+            .map { it.parseWeatherData() }
+            .filter { it.name?.contains("i", true).isTrue() }
+            .sortedBy { it.name }
+            .reversed()
+            .forEach { recyclerAdapter.add(it) }
 
         btn.setOnClickListener(this)
         btn.setOnClickListener {
