@@ -7,6 +7,4 @@ object WeatherMapper {
     private val gson = Gson()
 
     fun toWeatherData(json: String) = gson.fromJson(json,  WeatherData::class.java)
-
-    fun String.parseWeatherData() = toWeatherData(this)
 }

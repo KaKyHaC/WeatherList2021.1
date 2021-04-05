@@ -32,16 +32,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         recyclerView.layoutManager =
             LinearLayoutManager(this,  LinearLayoutManager.VERTICAL, false)
 
-//        fillText("myText", 10000)
         editText.setText(readText())
-
-        readNotes()
-            .map { it.parseWeatherData() }
-            .filterNotNull()
-            .sortedBy { it.name }
-            .filter { it.name?.contains("i", true).isTrue() }
-            .reversed()
-            .forEach { recyclerAdapter.add(it) }
 
         btn.setOnClickListener(this)
         btn.setOnClickListener {
