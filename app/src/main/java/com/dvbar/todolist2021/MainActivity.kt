@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
 
-    private val recyclerAdapter = StringAdapter()
+    private val recyclerAdapter = WeatherDataAdapter()
     private lateinit var dbHelper: DbHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         editText.setText(readText())
 
         for (data in readNotes()) {
-            recyclerAdapter.add(data)
+            recyclerAdapter.add(WeatherMapper.toWeatherData(data))
         }
 
         btn.setOnClickListener(this)
@@ -85,13 +85,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         return listNotes
     }
 
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == 1 && resultCode == RESULT_OK) {
             val stringExtra = data?.getStringExtra("newKey").orEmpty()
             saveNote(stringExtra)
-            recyclerAdapter.add(stringExtra)
+            recyclerAdapter.add(WeatherMapper.toWeatherData(stringExtra))
         }
     }
 
