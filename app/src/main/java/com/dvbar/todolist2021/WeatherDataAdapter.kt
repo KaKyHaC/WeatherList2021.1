@@ -10,6 +10,11 @@ class WeatherDataAdapter : RecyclerView.Adapter<WeatherDataAdapter.WeatherDataVi
 
     private val data = mutableListOf<WeatherData>()
 
+    fun clean() {
+        data.clear()
+        notifyDataSetChanged()
+    }
+
     fun add(text: WeatherData) {
         data.add(text)
         notifyDataSetChanged()

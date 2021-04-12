@@ -22,14 +22,7 @@ class SecondActivity : AppCompatActivity() {
 
         button.setOnClickListener {
             val text = editText.text.toString()
-            Thread {
-                val weather = WebApiHelper.getWeather(text)
-                Log.d("SecondActivity", weather)
-                val intent = Intent()
-                intent.putExtra("newKey", weather)
-                setResult(RESULT_OK, intent)
-                finish()
-            }.start()
+            WeatherService.run(this, text)
         }
     }
 }

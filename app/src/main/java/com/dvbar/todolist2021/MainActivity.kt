@@ -2,6 +2,7 @@ package com.dvbar.todolist2021
 
 import android.content.ContentValues
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
@@ -14,7 +15,9 @@ import com.dvbar.todolist2021.WeatherMapper.parseWeatherData
 class MainActivity : AppCompatActivity(), View.OnClickListener {
 
     private val recyclerAdapter = WeatherDataAdapter()
-    private lateinit var dbHelper: DbHelper
+    private lateinit var dbHelper: NotesDbHelper
+
+    private val readyBroadcastReceiver = ReadyBroadcastReceiver(::updateAdapter)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,7 +28,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         val editText = findViewById<EditText>(R.id.edit_text)
         val recyclerView = findViewById<RecyclerView>(R.id.recycler_view)
 
-        dbHelper = DbHelper(this)
+        dbHelper = NotesDbHelper(this)
 
         recyclerView.adapter = recyclerAdapter
         recyclerView.layoutManager =
@@ -37,12 +40,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 //            recyclerAdapter.add(WeatherMapper.toWeatherData(data))
 //        }
 
-        readNotes()
-            .map { it.parseWeatherData() }
-            .filter { it.name?.contains("i", true).isTrue() }
-            .sortedBy { it.name }
-            .reversed()
-            .forEach { recyclerAdapter.add(it) }
+        updateAdapter()
 
         btn.setOnClickListener(this)
         btn.setOnClickListener {
@@ -52,6 +50,26 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             intent.putExtra("key", text)
             startActivityForResult(intent, 1)
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        registerReceiver(readyBroadcastReceiver, ReadyBroadcastReceiver.filter)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        unregisterReceiver(readyBroadcastReceiver)
+    }
+
+    fun updateAdapter() {
+        recyclerAdapter.clean()
+        dbHelper.readNotes()
+            .map { it.parseWeatherData() }
+            .filter { it.name?.contains("i", true).isTrue() }
+            .sortedBy { it.name }
+            .reversed()
+            .forEach { recyclerAdapter.add(it) }
     }
 
     fun saveText(text: String) {
@@ -66,38 +84,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         return sharedPreferences.getString("editText", "").orEmpty()
     }
 
-    fun saveNote(note: String) {
-        val writableDatabase = dbHelper.writableDatabase
-        val value = ContentValues()
-        value.put(DbContract.NotesEntry.TEXT_COLUMN_NAME, note)
-        writableDatabase.insert(DbContract.NotesEntry.TABLE_NAME, null, value)
-    }
-
-    fun readNotes(): List<String> {
-        val listNotes = mutableListOf<String>()
-        val readableDatabase = dbHelper.readableDatabase
-        val cursor = readableDatabase.query(
-            DbContract.NotesEntry.TABLE_NAME,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null
-        )
-        val columnIndex = cursor.getColumnIndex(DbContract.NotesEntry.TEXT_COLUMN_NAME)
-        while (cursor.moveToNext()) {
-            val string = cursor.getString(columnIndex)
-            listNotes.add(string)
-        }
-        return listNotes
-    }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == 1 && resultCode == RESULT_OK) {
             val stringExtra = data?.getStringExtra("newKey").orEmpty()
-            saveNote(stringExtra)
+            dbHelper.saveNote(stringExtra)
             recyclerAdapter.add(WeatherMapper.toWeatherData(stringExtra))
         }
     }
