@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:gravity="center"
     android:padding="40dp"
     android:orientation="vertical">
@@ -12,13 +14,28 @@
         android:layout_height="0dp"
         android:layout_weight="1"/>
 
-    <Button
+    <LinearLayout
         android:id="@+id/button"
         android:layout_width="150dp"
-        android:paddingStart="40dp"
-        android:layout_marginEnd="40dp"
-        android:layout_height="wrap_content"
-        android:text="My Button" />
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="8dp"
+        android:background="@color/purple_200"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:text="My Button" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            app:srcCompat="@android:drawable/btn_star_big_on" />
+
+    </LinearLayout>
+
 
     <EditText
         android:id="@+id/edit_text"

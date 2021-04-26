@@ -24,7 +24,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
         setContentView(R.layout.activity_main)
 
-        val btn = findViewById<Button>(R.id.button)
+        val btn = findViewById<View>(R.id.button)
         val editText = findViewById<EditText>(R.id.edit_text)
         val recyclerView = findViewById<RecyclerView>(R.id.recycler_view)
 
